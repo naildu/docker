@@ -23,6 +23,7 @@ type Store interface {
 	Children(id ID) []ID
 	Map() map[ID]*Image
 	Heads() map[ID]*Image
+	Reload() error
 }
 
 // LayerGetReleaser is a minimal interface for getting and releasing images.
@@ -102,6 +103,11 @@ func (is *store) restore() error {
 	}
 
 	return nil
+}
+
+func (is *store) Reload() error {
+	logrus.Debugf("Reload imagedb")
+	return is.restore()
 }
 
 func (is *store) Create(config []byte) (ID, error) {

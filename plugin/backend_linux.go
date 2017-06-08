@@ -477,6 +477,11 @@ type pluginReference struct {
 	pluginID digest.Digest
 }
 
+// for refstore.Store interface compatibility
+func (r *pluginReference) Reload() error {
+	return nil
+}
+
 func (r *pluginReference) References(id digest.Digest) []reference.Named {
 	if r.pluginID != id {
 		return nil

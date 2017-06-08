@@ -1125,3 +1125,23 @@ func CreateDaemonRoot(config *config.Config) error {
 
 	return nil
 }
+
+func (d *Daemon) ReloadImageMetadata() error {
+	logrus.Debugf("Reload image metadata")
+	err := d.layerStore.Reload()
+	if err != nil {
+		return err
+	}
+	err = d.imageStore.Reload()
+	if err != nil {
+		return err
+	}
+
+	// distribution?
+
+	err = d.referenceStore.Reload()
+	if err != nil {
+		return err
+	}
+	return nil
+}

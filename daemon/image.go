@@ -71,7 +71,17 @@ func (daemon *Daemon) GetImageID(refOrID string) (image.ID, error) {
 func (daemon *Daemon) GetImage(refOrID string) (*image.Image, error) {
 	imgID, err := daemon.GetImageID(refOrID)
 	if err != nil {
-		return nil, err
+		if daemon.layerStore.DriverName() == "ceph-graph-driver" {
+			if err = daemon.ReloadImageMetadata(); err != nil {
+				return nil, err
+			}
+			imgID, err = daemon.GetImageID(refOrID)
+			if err != nil {
+				return nil, err
+			}
+		} else {
+			return nil, err
+		}
 	}
 	return daemon.imageStore.Get(imgID)
 }

@@ -192,6 +192,7 @@ type Store interface {
 	Cleanup() error
 	DriverStatus() [][2]string
 	DriverName() string
+	Reload() error
 }
 
 // DescribableStore represents a layer store capable of storing

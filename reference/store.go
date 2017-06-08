@@ -9,6 +9,7 @@ import (
 	"sort"
 	"sync"
 
+	"github.com/Sirupsen/logrus"
 	"github.com/docker/distribution/reference"
 	"github.com/docker/docker/pkg/ioutils"
 	"github.com/opencontainers/go-digest"
@@ -34,6 +35,7 @@ type Store interface {
 	AddDigest(ref reference.Canonical, id digest.Digest, force bool) error
 	Delete(ref reference.Named) (bool, error)
 	Get(ref reference.Named) (digest.Digest, error)
+	Reload() error
 }
 
 type store struct {
@@ -90,6 +92,11 @@ func NewReferenceStore(jsonPath string) (Store, error) {
 		return nil, err
 	}
 	return store, nil
+}
+
+func (store *store) Reload() error {
+	logrus.Debugf("Reload repositories.json")
+	return store.reload()
 }
 
 // AddTag adds a tag reference to the store. If force is set to true, existing

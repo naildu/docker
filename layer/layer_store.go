@@ -106,6 +106,33 @@ func NewStoreFromGraphDriver(store MetadataStore, driver graphdriver.Driver) (St
 	return ls, nil
 }
 
+func (ls *layerStore) Reload() error {
+	logrus.Debugf("Reload layerdb")
+	ids, mounts, err := ls.store.List()
+	if err != nil {
+		return err
+	}
+
+	for _, id := range ids {
+		l, err := ls.loadLayer(id)
+		if err != nil {
+			logrus.Debugf("Failed to load layer %s: %s", id, err)
+			continue
+		}
+		if l.parent != nil {
+			l.parent.referenceCount++
+		}
+	}
+
+	for _, mount := range mounts {
+		if err := ls.loadMount(mount); err != nil {
+			logrus.Debugf("Failed to load mount %s: %s", mount, err)
+		}
+	}
+
+	return nil
+}
+
 func (ls *layerStore) loadLayer(layer ChainID) (*roLayer, error) {
 	cl, ok := ls.layerMap[layer]
 	if ok {
