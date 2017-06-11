@@ -53,7 +53,8 @@ func (cli *DaemonCli) setupConfigReloadTrap() {
 	signal.Notify(c, syscall.SIGHUP)
 	go func() {
 		for range c {
-			cli.reloadConfig()
+			//cli.reloadConfig()
+			cli.d.ReloadImageMetadata()
 		}
 	}()
 }
